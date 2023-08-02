@@ -14,9 +14,15 @@ const {
   deleteValdetorCategorie,
   createValdetorCategorie,
 } = require("../utils/valdiroeErrors/categorieValdetorError");
-const { getSubCategory } = require("../services/subCategotyService");
+const {
+  getSubCategory,
+  createSubCategory,
+} = require("../services/subCategotyService");
 
-router.use("/:categoryId/subcategory", getSubCategory);
+router
+  .route("/:categoryId/subcategory")
+  .get(getSubCategory)
+  .post(createSubCategory);
 
 // @desc handel all ruots category
 router

@@ -10,6 +10,7 @@ const routerCategorie = require("./routers/routerCategorie");
 const routersubCategorie = require("./routers/routerSubCategory");
 const apiError = require("./utils/apiError");
 const globlError = require("./middleware/globlError");
+const routerBrand = require("./routers/routerBrand");
 
 app.use(express.json());
 
@@ -22,6 +23,9 @@ app.use("/api/v1/category", routerCategorie);
 
 // @desc Handeling My Ruotes in sub category
 app.use("/api/v1/subcategory", routersubCategorie);
+
+// @desc Handeling My Ruotes in Brands
+app.use("/api/v1/brands", routerBrand);
 
 // @desc Handeling any not ruotes for errors
 app.all("*", (req, res, next) => {

@@ -2,10 +2,18 @@ const asyncHander = require("express-async-handler");
 const SubCategoryMudels = require("../modules/subCategory");
 const { default: slugify } = require("slugify");
 const apiError = require("../utils/apiError");
+
+// setCategoryIdInBody = (req, res, next) => {
+//   console.log(req.params.categoryId);
+//   if (!req.body.categori) req.body.categori = req.params.categoryId;
+//   next();
+// };
+
 // @docs    Create Sub Category
 // @Router  POST /api/v1/subcategory
 // @access  Private
 const createSubCategory = asyncHander(async (req, res) => {
+    if (!req.body.categori) req.body.categori = req.params.categoryId;
   const { name, categori } = req.body;
   const subCategory = await SubCategoryMudels.create({
     name,
@@ -99,4 +107,6 @@ module.exports = {
   getSubCategoryById,
   updateSubCategorie,
   deleteSubCategorie,
+  // MeddilWare
+  // setCategoryIdInBody,
 };

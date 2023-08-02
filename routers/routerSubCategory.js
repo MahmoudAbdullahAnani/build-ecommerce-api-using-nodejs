@@ -5,6 +5,7 @@ const {
   getSubCategoryById,
   updateSubCategorie,
   deleteSubCategorie,
+  // setCategoryIdInBody,
 } = require("../services/subCategotyService");
 const {
   createSubCategoryValdetor,
@@ -17,7 +18,12 @@ const router = exporess.Router({ mergeParams: true });
 
 router
   .route("/")
-  .post(createSubCategoryValdetor, meddilewareCategorieError, createSubCategory)
+  .post(
+    // setCategoryIdInBody,
+    createSubCategoryValdetor,
+    meddilewareCategorieError,
+    createSubCategory
+  )
   .get(getSubCategory);
 
 router
