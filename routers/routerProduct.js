@@ -5,6 +5,8 @@ const {
   getPruductById,
   updateProducts,
   deleteProducat,
+  upload,
+  reProcessImage,
 } = require("../services/productService");
 const router = exporess.Router();
 
@@ -19,7 +21,13 @@ const {
 router
   .route("/")
   .get(getProducts)
-  .post(createValdetorProduct, meddilewareCategorieError, postProducts);
+  .post(
+    upload.single("imageCover"),
+    reProcessImage,
+    createValdetorProduct,
+    meddilewareCategorieError,
+    postProducts
+  );
 
 router
   .route("/:id")

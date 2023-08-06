@@ -2,7 +2,32 @@ const { default: slugify } = require("slugify");
 const categorieModule = require("./../modules/categori");
 const asyncHandler = require("express-async-handler");
 const apiError = require("../utils/apiError");
+const sharp = require("sharp");
+const multer = require("multer");
+const { storage, fileFilter } = require("../utils/uploads/singleImage");
 
+// const handelDF = muter.diskStorage({
+//   destination: (req, file, cb) => {
+//     cb(null, "uplodes/category/images");
+//   },
+//   filename: (req, file, cb) => {
+//     cb(null, Date.now() + file.originalname);
+//   },
+// });
+
+
+const upload = multer({ storage, fileFilter });
+
+const imageUpload = asyncHandler(async (req, res, next) => {
+  const fileName = Date.now() + req.file.originalname;
+  await sharp(req.file.buffer)
+    .resize(400, 600)
+    .toFormat("jpg")
+    .jpeg({ quality: 90 })
+    .toFile(`uploads/category/images/${fileName}`);
+  req.body.image = fileName;
+  next();
+});
 // @desc  Get all subCategory in the single category
 // @router  Get /api/v1/category/:categoryId/subCategory
 // @acces  Public
@@ -14,10 +39,7 @@ const getCategorie = asyncHandler(async (req, res) => {
   const page = req.query?.page || 1;
   const limit = req.query?.limit || 5;
   const skip = (page - 1) * limit;
-  const data = await categorieModule
-    .find({})
-    .skip(skip)
-    .limit(limit);
+  const data = await categorieModule.find({}).skip(skip).limit(limit);
   const dataOpj = {
     page,
     successful: data ? "true" : "false",
@@ -50,7 +72,8 @@ const getCategorieById = asyncHandler(async (req, res, next) => {
 // @access    Private
 const postCategorie = asyncHandler(async (req, res, next) => {
   const name = req.body.name;
-  const result = await categorieModule.create({ name, slug: slugify(name) });
+  req.body.slug = slugify(name);
+  const result = await categorieModule.create(req.body);
   return res.status(201).json(result);
 });
 
@@ -60,9 +83,12 @@ const postCategorie = asyncHandler(async (req, res, next) => {
 const updateCategorie = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
   const name = req.body.name;
+  if (req.body.sulg) {
+    req.body.slug = slugify(name);
+  }
   const updateData = await categorieModule.findByIdAndUpdate(
     { _id: id },
-    { name, slug: slugify(name) },
+    req.body,
     { new: true }
   );
   updateData
@@ -87,4 +113,6 @@ module.exports = {
   getCategorieById,
   updateCategorie,
   deleteCategorie,
+  imageUpload,
+  upload,
 };

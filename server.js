@@ -1,3 +1,5 @@
+const path = require('path')
+
 const express = require("express");
 const app = express();
 const dotenv = require("dotenv");
@@ -18,6 +20,8 @@ app.use(express.json());
 connectionDB();
 // Medel Ware Development
 NODE_ENV === "development" && app.use(morgan("dev"));
+// access static files
+app.use(express.static(path.join(__dirname,"uploads")))
 
 // @desc Handeling My Ruotes in category
 app.use("/api/v1/category", routerCategorie);

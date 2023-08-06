@@ -2,6 +2,20 @@ const expressAsyncHandler = require("express-async-handler");
 const brandModule = require("../modules/brandModule");
 const apiError = require("../utils/apiError");
 const { default: slugify } = require("slugify");
+const multer = require("multer");
+const { storage, fileFilter } = require("../utils/uploads/singleImage");
+const sharp = require("sharp");
+
+const upload = multer({ storage, fileFilter });
+const imageBrandResize = expressAsyncHandler(async (req, res, next) => {
+  const fileName = Date.new() + "-" + req.file.originalname;
+  await sharp(req.file.buffer)
+    .resize(500, 600)
+    .toFormat("jpg")
+    .jpeg({ quality: 10 })
+    .toFile("uploads/brand" + fileName);
+  next();
+});
 
 // @desc      Get All Brands
 // @Route     GET /api/v1/brands
@@ -38,8 +52,7 @@ const getBrand = expressAsyncHandler(async (req, res, next) => {
 // @Route     POST /api/v1/brands
 // @access    Private
 const createBrand = expressAsyncHandler(async (req, res, next) => {
-  const { name } = req.body;
-  const brand = await brandModule.create({ name, slug: slugify(name) });
+  const brand = await brandModule.create(req.body);
   const data = {
     message: "Success",
     error: null,
@@ -54,9 +67,12 @@ const createBrand = expressAsyncHandler(async (req, res, next) => {
 const updateBrand = expressAsyncHandler(async (req, res, next) => {
   const { name } = req.body;
   const { id } = req.params;
+  if (req.body.slug) {
+    req.body.slug =slugify(name)
+  }
   const brand = await brandModule.findByIdAndUpdate(
     id,
-    { name, slug: slugify(name) },
+    req.body,
     { new: true }
   );
   const data = {
@@ -87,4 +103,6 @@ module.exports = {
   createBrand,
   updateBrand,
   deleteBrand,
+  upload,
+  imageBrandResize,
 };

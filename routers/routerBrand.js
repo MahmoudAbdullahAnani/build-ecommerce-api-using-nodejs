@@ -6,14 +6,21 @@ const {
   deleteValdetorBrand,
   createValdetorBrand,
 } = require("../utils/valdiroeErrors/brandValdetorError");
-const { getBrands, createBrand, getBrand, updateBrand, deleteBrand } = require("../services/brandService");
+const { getBrands, createBrand, getBrand, updateBrand, deleteBrand, imageBrandResize } = require("../services/brandService");
 const meddilewareCategorieError = require("../middleware/categotieErrors");
+const { upload } = require("../services/categorie");
 
 
 router
   .route("/")
   .get(getBrands)
-  .post(createValdetorBrand, meddilewareCategorieError, createBrand);
+  .post(
+    createValdetorBrand,
+    meddilewareCategorieError,
+    upload.single("image"),
+    imageBrandResize,
+    createBrand
+  );
 
 
 router
