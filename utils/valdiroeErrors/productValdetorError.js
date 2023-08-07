@@ -52,14 +52,13 @@ const createValdetorProduct = [
       return true;
     }),
   check("color")
-    .notEmpty()
-    .withMessage("the color is requred")
+    .optional()
     .isArray()
     .withMessage("It should be a matrix of colors"),
   check("imageCover")
     .notEmpty()
     .withMessage("There must be image cover for product"),
-  check("images").isArray().withMessage("It should be a matrix of images"),
+  check("images").optional().isArray().withMessage("It should be a matrix of images"),
   // this field is a check if in my db or not
   check("category")
     .notEmpty()
@@ -69,6 +68,7 @@ const createValdetorProduct = [
     .custom((categoryId) =>
       categorieModel.findById(categoryId).then((result) => {
         if (!result) {
+          console.log(result);
           return Promise.reject(new Error("this category id is not defind"));
         }
         return true;

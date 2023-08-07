@@ -6,7 +6,7 @@ const {
   updateProducts,
   deleteProducat,
   upload,
-  reProcessImage,
+  reProcessImages,
 } = require("../services/productService");
 const router = exporess.Router();
 
@@ -22,8 +22,11 @@ router
   .route("/")
   .get(getProducts)
   .post(
-    upload.single("imageCover"),
-    reProcessImage,
+    upload.fields([
+      { name: "imageCover", maxCount: 1 },
+      { name: "images", maxCount: 10 },
+    ]),
+    reProcessImages,
     createValdetorProduct,
     meddilewareCategorieError,
     postProducts
@@ -32,7 +35,16 @@ router
 router
   .route("/:id")
   .get(getValdetorProductById, meddilewareCategorieError, getPruductById)
-  .put(updataValdetorProduct, meddilewareCategorieError, updateProducts)
+  .put(
+    upload.fields([
+      { name: "imageCover", maxCount: 1 },
+      { name: "images", maxCount: 10 },
+    ]),
+    reProcessImages,
+    updataValdetorProduct,
+    meddilewareCategorieError,
+    updateProducts
+  )
   .delete(deleteValdetorProduct, meddilewareCategorieError, deleteProducat);
 
 module.exports = router;

@@ -20,6 +20,13 @@ const categorieSchema = new mongoose.Schema(
   }
 );
 
+categorieSchema.post("init", (doc) => {
+  if (doc.image) {
+    const fileName = doc.image
+    doc.image = `${process.env.DOMAN_NAME}category/images/${fileName}`;
+  }
+});
+
 const categorieModel = mongoose.model("Categorie", categorieSchema);
 
 module.exports = categorieModel;

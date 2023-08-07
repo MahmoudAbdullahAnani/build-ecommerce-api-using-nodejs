@@ -15,8 +15,7 @@ const { storage, fileFilter } = require("../utils/uploads/singleImage");
 //   },
 // });
 
-
-const upload = multer({ storage, fileFilter });
+const upload = multer({ storage: storage, fileFilter: fileFilter });
 
 const imageUpload = asyncHandler(async (req, res, next) => {
   const fileName = Date.now() + req.file.originalname;

@@ -14,6 +14,7 @@ const apiError = require("./utils/apiError");
 const globlError = require("./middleware/globlError");
 const routerBrand = require("./routers/routerBrand");
 const routerProduct = require("./routers/routerProduct");
+const routerUser = require("./routers/routerUser");
 
 app.use(express.json());
 
@@ -34,6 +35,9 @@ app.use("/api/v1/brands", routerBrand);
 
 // @desc Handeling My Ruotes in Product
 app.use("/api/v1/products", routerProduct);
+
+// @desc Handeling My Ruotes in user
+app.use("/api/v1/users", routerUser);
 
 // @desc Handeling any not ruotes for errors
 app.all("*", (req, res, next) => {

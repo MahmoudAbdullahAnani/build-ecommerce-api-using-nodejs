@@ -46,6 +46,12 @@ const getProducts = asyncHandler(async (req, res) => {
     .select(handelMoreFieldsFields + "-__v");
 
   const data = await mongooBuild;
+  // data.map((product) => {
+  //   const imageCoverName = product.imageCover;
+  //   delete product.imageCover;
+  //   product.imageCover = `${process.env.DOMAN_NAME}product/images/${imageCoverName}`;
+  //   return product;
+  // });
   const dataOpj = {
     page,
     successful: data ? "true" : "false",
@@ -73,24 +79,43 @@ const getPruductById = asyncHandler(async (req, res, next) => {
     : next(new apiError("This is product is No't Found", 404));
 });
 
-const upload = multer({ storage, fileFilter });
-const reProcessImage = asyncHandler(async (req, res, next) => {
-  // req.file
-  const fileName = Date.new() + "-" + req.file.originalname;
-  await sharp(req.file)
-    .resize(500, 600)
-    .toFormat("jpg")
-    .jpeg({ quality: 10 })
-    .toFile(`uploads/product/images/${fileName}`);
-  next()
-})
+const upload = multer({ storage: storage, fileFilter: fileFilter });
+const reProcessImages = asyncHandler(async (req, res, next) => {
+  if (req.files.imageCover) {
+    const imageCaverFileName =
+      Date.now() + "-" + req.files.imageCover[0].originalname;
+    await sharp(req.files.imageCover[0].buffer)
+      .resize(500, 600)
+      .toFormat("jpg")
+      .jpeg({ quality: 90 })
+      .toFile(`uploads/product/images/${imageCaverFileName}`);
+    req.body.imageCover = imageCaverFileName;
+  }
+  if (req.files.images) {
+    const images = [];
+    await Promise.all(
+      req.files.images.map((img) => {
+        const imageFileName = Date.now() + "-" + img.originalname;
+        sharp(img.buffer)
+          .resize(500, 600)
+          .toFormat("jpg")
+          .jpeg({ quality: 90 })
+          .toFile(`uploads/product/images/${imageFileName}`);
+        return images.push(imageFileName);
+      })
+    );
+    req.body.images = images;
+  }
+  next();
+});
 
 // @desc      Create products {name, slug}
 // @route     POST /api/v1/products
 // @access    Private
 const postProducts = asyncHandler(async (req, res, next) => {
+  // console.log(req.body);
   if (!req.body.slug) {
-    req.body.slug = slugify(req.body.name);
+    req.body.slug = slugify(req.body.title);
   }
   const result = await productsModel.create(req.body);
   return res.status(201).json(result);
@@ -129,5 +154,5 @@ module.exports = {
   updateProducts,
   deleteProducat,
   upload,
-  reProcessImage,
+  reProcessImages,
 };
