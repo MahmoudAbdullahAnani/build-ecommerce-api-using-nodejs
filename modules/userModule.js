@@ -1,17 +1,18 @@
 const { default: mongoose } = require("mongoose");
 const bcrypt = require("bcryptjs");
+const { default: slugify } = require("slugify");
 const userSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: [true, "name is required"],
+      required: true,
       trim: true,
       minlength: [3, "name must be at least 3 characters long"],
       unique: [true, "This name already exists"],
     },
     slug: {
       type: String,
-      required: [true, "name is required"],
+      required: true,
       trim: true,
       minlength: [3, "name must be at least 3 characters long"],
       unique: true,
@@ -25,20 +26,21 @@ const userSchema = new mongoose.Schema(
       type: String,
       trim: true,
       unique: [true, "this email is alryde using by user more"],
-      required: [true, "email is required"],
+      required: true,
     },
     password: {
       type: String,
-      required: [true, "password is required"],
+      required: true,
       trim: true,
       minlength: [6, "password must be at least 6 characters long"],
     },
     role: {
       type: String,
-      required: [true, "role is required"],
+      required: true,
       trim: true,
       minlength: [3, "role must be at least 3 characters long"],
       enum: ["user", "admin", "manger"],
+      default: "user",
     },
     userImg: {
       type: String,
@@ -47,6 +49,9 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    dateUpdatePasswordAt: Date,
+    resetPasswordCode: String,
+    resetPasswordExpire:Date,
   },
   { timestamps: true }
 );
@@ -69,7 +74,6 @@ userSchema.pre("save", async function (next) {
   this.password = await bcrypt.hash(this.password, salt);
   next();
 });
-
 
 const UserModel = mongoose.model("User", userSchema);
 

@@ -17,11 +17,14 @@ const {
   updataValdetorProduct,
   deleteValdetorProduct,
 } = require("../utils/valdiroeErrors/productValdetorError");
+const { allowedTo, protect } = require("../services/authService");
 
 router
   .route("/")
   .get(getProducts)
   .post(
+    protect,
+    allowedTo("admin", "manger"),
     upload.fields([
       { name: "imageCover", maxCount: 1 },
       { name: "images", maxCount: 10 },
@@ -34,8 +37,16 @@ router
 
 router
   .route("/:id")
-  .get(getValdetorProductById, meddilewareCategorieError, getPruductById)
+  .get(
+    protect,
+    allowedTo("admin", "manger", "user"),
+    getValdetorProductById,
+    meddilewareCategorieError,
+    getPruductById
+  )
   .put(
+    protect,
+    allowedTo("admin", "manger"),
     upload.fields([
       { name: "imageCover", maxCount: 1 },
       { name: "images", maxCount: 10 },
@@ -45,6 +56,12 @@ router
     meddilewareCategorieError,
     updateProducts
   )
-  .delete(deleteValdetorProduct, meddilewareCategorieError, deleteProducat);
+  .delete(
+    protect,
+    allowedTo("admin", "manger"),
+    deleteValdetorProduct,
+    meddilewareCategorieError,
+    deleteProducat
+  );
 
 module.exports = router;

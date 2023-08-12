@@ -17,18 +17,21 @@ const {
   updateUserPasswordValidator,
 } = require("../utils/valdiroeErrors/userValdetorError");
 const meddilewareCategorieError = require("../middleware/categotieErrors");
+const { protect, allowedTo } = require("../services/authService");
 const router = express.Router();
 
 router
   .route("/")
   .post(
+    protect,
+    allowedTo("admin", "manger"),
     upload.single("userImg"),
     processUserImage,
     createUserValidator,
     meddilewareCategorieError,
     createUser
   )
-  .get(getAllUsers);
+  .get(protect, allowedTo("admin", "manger"), getAllUsers);
 router.route("/updatePassword/:id").put(
   updateUserPasswordValidator,
   meddilewareCategorieError,
@@ -36,14 +39,28 @@ router.route("/updatePassword/:id").put(
 );
 router
   .route("/:id")
-  .get(getUserValidator, meddilewareCategorieError, getUser)
+  .get(
+    protect,
+    allowedTo("admin", "manger"),
+    getUserValidator,
+    meddilewareCategorieError,
+    getUser
+  )
   .put(
+    protect,
+    allowedTo("admin"),
     upload.single("userImg"),
     processUserImage,
     updateUserValidator,
     meddilewareCategorieError,
     updateUser
   )
-  .delete(deleteUserValidator, meddilewareCategorieError, deleteUser);
+  .delete(
+    protect,
+    allowedTo("admin"),
+    deleteUserValidator,
+    meddilewareCategorieError,
+    deleteUser
+  );
 
 module.exports = router;

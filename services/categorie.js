@@ -18,13 +18,15 @@ const { storage, fileFilter } = require("../utils/uploads/singleImage");
 const upload = multer({ storage: storage, fileFilter: fileFilter });
 
 const imageUpload = asyncHandler(async (req, res, next) => {
-  const fileName = Date.now() + req.file.originalname;
-  await sharp(req.file.buffer)
-    .resize(400, 600)
-    .toFormat("jpg")
-    .jpeg({ quality: 90 })
-    .toFile(`uploads/category/images/${fileName}`);
-  req.body.image = fileName;
+  if (req.file.originalname) {
+    const fileName = Date.now() + req.file.originalname;
+    await sharp(req.file.buffer)
+      .resize(400, 600)
+      .toFormat("jpg")
+      .jpeg({ quality: 90 })
+      .toFile(`uploads/category/images/${fileName}`);
+    req.body.image = fileName;
+  }
   next();
 });
 // @desc  Get all subCategory in the single category

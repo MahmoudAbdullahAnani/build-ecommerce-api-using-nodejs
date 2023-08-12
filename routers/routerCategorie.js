@@ -21,6 +21,7 @@ const {
   getSubCategory,
   createSubCategory,
 } = require("../services/subCategotyService");
+const { protect, allowedTo } = require("../services/authService");
 
 router
   .route("/:categoryId/subcategory")
@@ -31,23 +32,41 @@ router
 router
   .route("/")
   .post(
-    upload.single("image"),
-    imageUpload,
+    protect,
+    allowedTo("admin", "manger"),
+    (req, res, next) => {
+      if (req.body.image) upload.single("image"), imageUpload;
+      next();
+    },
     createValdetorCategorie,
     meddilewareCategorieError,
     postCategorie
   )
-  .get(getCategorie);
+  .get(protect, allowedTo("admin", "manger","user"), getCategorie);
 router
   .route("/:id")
-  .get(getValdetorCategorieById, meddilewareCategorieError, getCategorieById)
+  .get(
+    protect,
+    allowedTo("admin", "manger", "user"),
+    getValdetorCategorieById,
+    meddilewareCategorieError,
+    getCategorieById
+  )
   .put(
+    protect,
+    allowedTo("admin", "manger"),
     upload.single("image"),
     imageUpload,
     updataValdetorCategorie,
     meddilewareCategorieError,
     updateCategorie
   )
-  .delete(deleteValdetorCategorie, meddilewareCategorieError, deleteCategorie);
+  .delete(
+    protect,
+    allowedTo("admin", "manger"),
+    deleteValdetorCategorie,
+    meddilewareCategorieError,
+    deleteCategorie
+  );
 
 module.exports = router;

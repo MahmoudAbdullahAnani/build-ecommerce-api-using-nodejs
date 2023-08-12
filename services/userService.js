@@ -6,7 +6,6 @@ const sharp = require("sharp");
 const bcrypt = require("bcryptjs");
 const upload = multer({ storage, fileFilter });
 const processUserImage = expressAsyncHandler(async (req, res, next) => {
-  // console.log(req.file);
   const userImageFileName = Date.now() + "-" + req.file.originalname;
   await sharp(req.file.buffer)
     .resize(400, 400)
@@ -30,7 +29,7 @@ const createUser = expressAsyncHandler(async (req, res) => {
 //  @access Private
 const getAllUsers = expressAsyncHandler(async (req, res) => {
   const { limit } = req.query || 20;
-  const users = await UserModel.find({}).limit(limit);
+  const users = await UserModel.find({}).limit(limit).select("-__v -slug");
   res.status(200).json({
     success: true,
     count: users.length,
@@ -66,7 +65,10 @@ const updateUserPassword = expressAsyncHandler(async (req, res) => {
   const salt = await bcrypt.genSalt(10);
   const user = await UserModel.findByIdAndUpdate(
     { _id: req.params.id },
-    { password: await bcrypt.hash(req.body.password, salt) },
+    {
+      password: await bcrypt.hash(req.body.password, salt),
+      dateUpdatePasswordAt: Date.now(),
+    },
     {
       new: true,
     }
