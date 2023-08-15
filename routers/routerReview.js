@@ -7,6 +7,7 @@ const {
   createReview,
   updateReview,
   deleteReview,
+  getReviewByProductId
 } = require("../services/reviewService");
 const meddilewareCategorieError = require("../middleware/categotieErrors");
 const {
@@ -17,6 +18,9 @@ const {
 } = require("../utils/valdiroeErrors/reviewValdetorError");
 
 const { protect, allowedTo } = require("../services/authService");
+
+
+
 
 // the route '/' on actions is Create (post) and get all (get).
 router

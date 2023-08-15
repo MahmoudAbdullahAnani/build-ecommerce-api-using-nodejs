@@ -8,6 +8,8 @@ const {
   upload,
   reProcessImages,
 } = require("../services/productService");
+const { createReviewByProductId } = require("../services/reviewService");
+
 const router = exporess.Router();
 
 const meddilewareCategorieError = require("./../middleware/categotieErrors");
@@ -16,8 +18,45 @@ const {
   getValdetorProductById,
   updataValdetorProduct,
   deleteValdetorProduct,
+  createReviewByproductIdValdetor,
 } = require("../utils/valdiroeErrors/productValdetorError");
 const { allowedTo, protect } = require("../services/authService");
+const {
+  getReviewsByProductId,
+  getReviewOnproduct,
+} = require("../services/reviewService");
+const {
+  getReviewByproductIdValdetor,
+  getReviewByproductIdAndReviewIdValdetor,
+} = require("../utils/valdiroeErrors/reviewValdetorError");
+
+// Get all Reviews on productId
+router
+  .route("/:productId/review/:reviewId")
+  .get(
+    protect,
+    allowedTo("user", "admin", "manger"),
+    getReviewByproductIdAndReviewIdValdetor,
+    meddilewareCategorieError,
+    getReviewOnproduct
+);
+
+router
+  .route("/:productId/review")
+  .get(
+    protect,
+    allowedTo("user", "admin", "manger"),
+    getReviewByproductIdValdetor,
+    meddilewareCategorieError,
+    getReviewsByProductId
+  )
+  .post(
+    protect,
+    allowedTo("user"),
+    createReviewByproductIdValdetor,
+    meddilewareCategorieError,
+    createReviewByProductId
+  );
 
 router
   .route("/")

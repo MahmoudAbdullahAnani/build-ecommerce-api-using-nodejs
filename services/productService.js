@@ -5,6 +5,7 @@ const productsModel = require("../modules/productsModule");
 const multer = require("multer");
 const { storage, fileFilter } = require("../utils/uploads/singleImage");
 const sharp = require("sharp");
+const reviewModeule = require("../modules/reviewModeule");
 
 // @desc      Get All Products {limit, Page}
 // @route     GET /api/v1/products
@@ -43,7 +44,8 @@ const getProducts = asyncHandler(async (req, res) => {
     .skip(skip)
     .limit(limit)
     .sort(handelMoreFieldsSort)
-    .select(handelMoreFieldsFields + "-__v");
+    .select(handelMoreFieldsFields + "-__v")
+    .populate({ path: "reviews", select: "reviewText rating" });
 
   const data = await mongooBuild;
   // data.map((product) => {
@@ -68,11 +70,13 @@ const getProducts = asyncHandler(async (req, res) => {
 const getPruductById = asyncHandler(async (req, res, next) => {
   const id = req.params.id;
   const data = await productsModel.findById(id);
+  const reviews = await reviewModeule.find({ product: id });
   const dataOpj = {
     successful: data ? "true" : "false",
     isEmpty: [data].length <= 0 ? "true" : "false",
     length: [data].length,
     data,
+    reviews,
   };
   data
     ? res.status(200).json(dataOpj)

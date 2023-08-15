@@ -51,7 +51,26 @@ const userSchema = new mongoose.Schema(
     },
     dateUpdatePasswordAt: Date,
     resetPasswordCode: String,
-    resetPasswordExpire:Date,
+    resetPasswordExpire: Date,
+    wishlist: [
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: "products",
+      },
+    ],
+    addresses: [
+      {
+        id: { type: mongoose.Schema.Types.ObjectId },
+        alias: String,
+        details: {
+          type: String,
+          minlength: [3, "role must be at least 3 characters long"],
+        },
+        phone: String,
+        city: String,
+        postalCode: String,
+      },
+    ],
   },
   { timestamps: true }
 );

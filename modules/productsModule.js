@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const reviewModeule = require("./reviewModeule");
 
 const productsSchema = new mongoose.Schema(
   {
@@ -62,8 +63,7 @@ const productsSchema = new mongoose.Schema(
     },
     ratingsAverage: {
       type: Number,
-      min: [1, "less than the minimum"],
-      max: [5, "more than the maximum"],
+      default: 0,
     },
     ratingsQuantity: {
       type: Number,
@@ -72,6 +72,8 @@ const productsSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
   }
 );
 const editImageCaverName = (doc) => {
@@ -89,13 +91,37 @@ const editImagesName = (doc) => {
     });
   }
 };
+const ratingsQuantity = async (doc) => {
+  const reviews = await reviewModeule.find({ product: doc._id });
+  doc.ratingsQuantity = reviews.length;
+  return reviews.length;
+};
+const ratingsAverage = async (doc) => {
+  const reviews = await reviewModeule.find({ product: doc._id });
+  let plenary = 0;
+  reviews.map((review) => {
+    return (plenary += review.rating);
+  });
+  doc.ratingsAverage = plenary / reviews.length;
+  return reviews.length;
+};
 productsSchema.post("init", (doc) => {
+  ratingsQuantity(doc);
+  ratingsAverage(doc);
   editImageCaverName(doc);
   editImagesName(doc);
 });
 productsSchema.post("save", (doc) => {
+  ratingsQuantity(doc);
+  ratingsAverage(doc);
   editImageCaverName(doc);
   editImagesName(doc);
+});
+
+productsSchema.virtual("reviews", {
+  ref: "Review",
+  foreignField: "product",
+  localField: "_id",
 });
 
 const productsModel = mongoose.model("products", productsSchema);

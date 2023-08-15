@@ -83,9 +83,32 @@ const deleteReviewValdetor = [
     }),
 ];
 
+const getReviewByproductIdValdetor = [
+  check("productId")
+    .notEmpty()
+    .withMessage("id product must be required")
+    .isMongoId()
+    .withMessage("this id is invaled "),
+];
+
+const getReviewByproductIdAndReviewIdValdetor = [
+  check("productId")
+    .notEmpty()
+    .withMessage("the product id must be reqiured")
+    .isMongoId()
+    .withMessage("this invalid id"),
+  check("reviewId")
+    .notEmpty()
+    .withMessage("the review id must be reqiured")
+    .isMongoId()
+    .withMessage("this invalid id"),
+];
+
 module.exports = {
   createReviewValdetor,
   getReviewValdetor,
   updateReviewValdetor,
   deleteReviewValdetor,
+  getReviewByproductIdValdetor,
+  getReviewByproductIdAndReviewIdValdetor,
 };

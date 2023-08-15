@@ -12,7 +12,10 @@ const checkIsAuth = expressAsyncHandler(async (token, req, res, next) => {
     throw next(new apiError("error in token", 498));
   }
   // get user by id (this id in the decoded.userId)
-  const user = await UserModel.findById(decoded.userId);
+  const user = await UserModel.findById(decoded.userId).populate({
+    path: "wishlist",
+    select: "title description quantity imageCover",
+  });
   return user;
 });
 
@@ -95,7 +98,7 @@ const deleteMyAccount = expressAsyncHandler(async (req, res, next) => {
 // //  @Router  PUT api/v1/me
 // //  @access  Public/me
 // const activateMyAccount = expressAsyncHandler(async (req, res, next) => {
-    
+
 // })
 module.exports = {
   getMyData,
