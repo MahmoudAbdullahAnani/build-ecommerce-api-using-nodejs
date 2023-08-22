@@ -13,7 +13,11 @@ const addProductToCart = expressAsyncHandler(async (req, res, next) => {
   const userHaveCart = await cartModule.findOne({ user: req.user._id });
   const cartUserNow = userHaveCart?.cartItems || [];
   const allcouponsUsing = userHaveCart?.coupons || [];
-
+  if (quantity === 0) {
+    throw next(
+      new apiError("The number of products must be greater than zero", 401)
+    );
+  }
   // user have a cart and user action add product now and this product inserted db, check if product in db =Yes=then=> getQauntity
   const totalQauntityForProduct = product.quantity;
   let qauntityProductAddingAndInserted;
@@ -169,6 +173,11 @@ const updateCart = expressAsyncHandler(async (req, res, next) => {
     {},
     { new: true }
   );
+  if (quantity === 0) {
+    throw next(
+      new apiError("The number of products must be greater than zero", 401)
+    );
+  }
   const indexProductUpdate = cart.cartItems.findIndex(
     (pro) => pro.productId.toString() === productId
   );
