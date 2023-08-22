@@ -179,7 +179,6 @@ const createOrderCard = expressAsyncHandler(async (req, res, next) => {
     customer_email: req.user.email,
     metadata: req.body.shippingAddress,
   });
-  console.log(`${req.protocol}://${req.get("host")}/product/logo.jpeg`);
   res.status(200).json({ message: "Created Checkout Session", session });
 });
 

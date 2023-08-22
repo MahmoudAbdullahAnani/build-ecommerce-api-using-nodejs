@@ -1,4 +1,4 @@
-const path = require('path')
+const path = require("path");
 
 const express = require("express");
 const app = express();
@@ -12,15 +12,23 @@ const morgan = require("morgan");
 const apiError = require("./utils/apiError");
 const globlError = require("./middleware/globlError");
 // Routers
-const mountRouter = require("./routers/index")
+const mountRouter = require("./routers/index");
 
 app.use(express.json());
 
 connectionDB();
+
+// Deploymant Access & compression data
+const cors = require("cors");
+app.use(cors());
+// compress all responses
+const compression = require("compression");
+app.use(compression());
+
 // Medel Ware Development
 NODE_ENV === "development" && app.use(morgan("dev"));
 // access static files
-app.use(express.static(path.join(__dirname,"uploads")))
+app.use(express.static(path.join(__dirname, "uploads")));
 
 // Mount Router
 mountRouter(app);
