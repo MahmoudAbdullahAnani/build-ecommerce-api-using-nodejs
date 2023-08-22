@@ -7,8 +7,7 @@ dotenv.config({ path: "./config.env" });
 const PORT = process.env.PORT || 8000;
 const NODE_ENV = process.env.NODE_ENV;
 const connectionDB = require("./config/connectionDB");
-const morgan = require("morgan");
-// Errors
+x// Errors
 const apiError = require("./utils/apiError");
 const globlError = require("./middleware/globlError");
 // Routers
@@ -26,7 +25,9 @@ const compression = require("compression");
 app.use(compression());
 
 // Medel Ware Development
-NODE_ENV === "development" && app.use(morgan("dev"));
+if (NODE_ENV === "development") {
+  app.use(morgan("dev"));
+}
 // access static files
 app.use(express.static(path.join(__dirname, "uploads")));
 
