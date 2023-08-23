@@ -195,6 +195,7 @@ const checkoutCompletedService = async (req, res) => {
       endpointSecret
     );
   } catch (err) {
+    console.log('eventCheckOut',eventCheckOut)
     return res
       .status(400)
       .send(`Webhook Error(endpoint checkout-completed): ${err.message}`);
