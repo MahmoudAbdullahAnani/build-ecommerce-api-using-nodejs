@@ -186,7 +186,7 @@ const checkoutCompletedService = async (req, res) => {
   const endpointSecret = process.env.endpoint_checkout_completed_secret;
   const sig = req.headers["stripe-signature"];
 
-  console.log("req.data.object", req.data.object);
+  console.log("req.data.object", req.data.type);
 
   let eventCheckOut;
 
