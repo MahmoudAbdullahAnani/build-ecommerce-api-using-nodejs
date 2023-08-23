@@ -183,18 +183,18 @@ const createOrderCard = expressAsyncHandler(async (req, res, next) => {
 });
 
 const checkoutCompletedService = expressAsyncHandler(async (req, res) => {
-  const sig = request.headers["stripe-signature"];
+  const sig = req.headers["stripe-signature"];
 
   let event;
 
   try {
     event = stripe.webhooks.constructEvent(
-      request.body,
+      req.body,
       sig,
       process.env.endpoint_checkout_completed_secret
     );
   } catch (err) {
-    response.status(400).send(`Webhook Error: ${err.message}`);
+    res.status(400).send(`Webhook Error: ${err.message}`);
     return;
   }
 
