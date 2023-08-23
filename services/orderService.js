@@ -194,8 +194,7 @@ const checkoutCompletedService = expressAsyncHandler(async (req, res) => {
       process.env.endpoint_checkout_completed_secret
     );
   } catch (err) {
-    res.status(400).send(`Webhook Error: ${err.message}`);
-    return;
+    return res.status(400).send(`Webhook Error: ${err.message}`);
   }
 
   // Handle the event
