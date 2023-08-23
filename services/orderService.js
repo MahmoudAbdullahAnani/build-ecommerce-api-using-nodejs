@@ -190,9 +190,9 @@ const checkoutCompletedService = expressAsyncHandler(async (req, res) => {
   if (isPay) {
     // Then define and call a function to handle the event checkout.session.completed
     // decremant For The Qauntity And Dicremant For The Sold And Clear User Cart
-    const { cart } = await getAndCalcOrder(req, res);
+    const OrderData = await getAndCalcOrder(req, res);
 
-    const bulkAction = cart.cartItems.map((pro) => ({
+    const bulkAction = OrderData.cart.cartItems.map((pro) => ({
       updateOne: {
         filter: { _id: pro.productId },
         update: { $inc: { quantity: -pro.quantity, sold: +pro.quantity } },
