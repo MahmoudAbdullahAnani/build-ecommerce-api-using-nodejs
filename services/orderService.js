@@ -182,11 +182,14 @@ const createOrderCard = expressAsyncHandler(async (req, res, next) => {
   res.status(200).json({ message: "Created Checkout Session", session });
 });
 
-const checkoutCompletedService = expressAsyncHandler(async (req, res) => {
+const checkoutCompletedService = async (req, res) => {
   const sig = req.headers["stripe-signature"];
 
   let event;
-
+  console.log(
+    "process.env.endpoint_checkout_completed_secret",
+    process.env.endpoint_checkout_completed_secret
+  );
   try {
     event = stripe.webhooks.constructEvent(
       req.body,
@@ -214,7 +217,7 @@ const checkoutCompletedService = expressAsyncHandler(async (req, res) => {
 
   // Return a 200 response to acknowledge receipt of the event
   res.send();
-});
+};
 
 module.exports = {
   createOrderCash,

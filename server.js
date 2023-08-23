@@ -37,7 +37,7 @@ mountRouter(app);
 // Add End Point in checkout.session.completed
 const { checkoutCompletedService } = require("./services/orderService")
 app.post(
-  "/checkout-completed",
+    `/checkout-completed`,
   express.raw({ type: "application/json" }),
   checkoutCompletedService
 );
