@@ -186,10 +186,7 @@ const checkoutCompletedService = async (req, res) => {
   const sig = req.headers["stripe-signature"];
 
   let event;
-  console.log(
-    "process.env.endpoint_checkout_completed_secret",
-    process.env.endpoint_checkout_completed_secret
-  );
+  
   try {
     event = stripe.webhooks.constructEvent(
       req.body,
