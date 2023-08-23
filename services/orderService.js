@@ -186,7 +186,7 @@ const checkoutCompletedService = async (req, res) => {
   const sig = req.headers["stripe-signature"];
 
   let event;
-  
+
   try {
     event = stripe.webhooks.constructEvent(
       req.body,
@@ -194,10 +194,9 @@ const checkoutCompletedService = async (req, res) => {
       process.env.endpoint_checkout_completed_secret
     );
   } catch (err) {
-    res
+    return res
       .status(400)
       .send(`Webhook Error(endpoint checkout-completed): ${err.message}`);
-    return;
   }
 
   // Handle the event
