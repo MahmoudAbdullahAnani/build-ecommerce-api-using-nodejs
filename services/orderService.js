@@ -182,42 +182,29 @@ const createOrderCard = expressAsyncHandler(async (req, res, next) => {
   res.status(200).json({ message: "Created Checkout Session", session });
 });
 
-const checkoutCompletedService = async (req, res) => {
-  const endpointSecret = process.env.endpoint_checkout_completed_secret;
-  const sig = req.headers["stripe-signature"];
+const checkoutCompletedService = expressAsyncHandler(async (req, res) => {
+  // console.log("req.body.data", req.body.data.object);//data
+  let isPay = false;
+  isPay = req.body.data?.object || false;
 
-  console.log("req.body.data", req.body.data);
-  console.log("req.data", req.data);
+  if (isPay) {
+    // Then define and call a function to handle the event checkout.session.completed
+    // decremant For The Qauntity And Dicremant For The Sold And Clear User Cart
+    const { cart } = await getAndCalcOrder(req, res);
 
-  let eventCheckOut;
-
-  try {
-    eventCheckOut = stripe.webhooks.constructEvent(
-      req.body,
-      sig,
-      endpointSecret
-    );
-  } catch (err) {
-    return res
-      .status(400)
-      .send(`Webhook Error(endpoint checkout-completed): ${err.message}`);
+    const bulkAction = cart.cartItems.map((pro) => ({
+      updateOne: {
+        filter: { _id: pro.productId },
+        update: { $inc: { quantity: -pro.quantity, sold: +pro.quantity } },
+      },
+    }));
+    await productsModel.bulkWrite(bulkAction, {});
+    await cartModule.deleteMany({ user: cart.user });
+    return res.status(201).json({ status: "saccess", message: "payid" });
+  } else {
+    return res.status(400).send(`Unhandled event type ${eventCheckOut.type}`);
   }
-
-  // Handle the event
-  switch (eventCheckOut.type) {
-    case "checkout.session.completed":
-      const checkoutSessionCompleted = eventCheckOut.data.object;
-      // Then define and call a function to handle the event checkout.session.completed
-      console.log("checkoutSessionCompleted", checkoutSessionCompleted);
-      break;
-    // ... handle other event types
-    default:
-      res.status(400).send(`Unhandled event type ${eventCheckOut.type}`);
-  }
-
-  // Return a 200 response to acknowledge receipt of the event
-  res.send();
-};
+});
 
 module.exports = {
   createOrderCash,
