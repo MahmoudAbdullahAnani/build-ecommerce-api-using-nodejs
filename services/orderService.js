@@ -187,10 +187,14 @@ const checkoutCompletedService = async (req, res) => {
   if (endpointSecret) {
     const sig = req.headers["stripe-signature"];
 
-  let event;
+  let eventCheckOut;
 
   try {
-    event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
+    eventCheckOut = stripe.webhooks.constructEvent(
+      req.body,
+      sig,
+      endpointSecret
+    );
   } catch (err) {
     return res
       .status(400)
@@ -199,15 +203,15 @@ const checkoutCompletedService = async (req, res) => {
 }
 
   // Handle the event
-  switch (event.type) {
+  switch (eventCheckOut.type) {
     case "checkout.session.completed":
-      const checkoutSessionCompleted = event.data.object;
+      const checkoutSessionCompleted = eventCheckOut.data.object;
       // Then define and call a function to handle the event checkout.session.completed
       console.log("checkoutSessionCompleted", checkoutSessionCompleted);
       break;
     // ... handle other event types
     default:
-      res.status(400).send(`Unhandled event type ${event.type}`);
+      res.status(400).send(`Unhandled event type ${eventCheckOut.type}`);
   }
 
   // Return a 200 response to acknowledge receipt of the event
