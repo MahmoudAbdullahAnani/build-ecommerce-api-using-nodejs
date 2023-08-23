@@ -183,8 +183,10 @@ const createOrderCard = expressAsyncHandler(async (req, res, next) => {
 });
 
 const checkoutCompletedService = async (req, res) => {
-  const endpointSecret =process.env.endpoint_checkout_completed_secret
-    const sig = req.headers["stripe-signature"];
+  const endpointSecret = process.env.endpoint_checkout_completed_secret;
+  const sig = req.headers["stripe-signature"];
+
+  console.log("req.data.object", req.data.object);
 
   let eventCheckOut;
 
@@ -195,7 +197,6 @@ const checkoutCompletedService = async (req, res) => {
       endpointSecret
     );
   } catch (err) {
-    console.log('eventCheckOut',eventCheckOut)
     return res
       .status(400)
       .send(`Webhook Error(endpoint checkout-completed): ${err.message}`);
