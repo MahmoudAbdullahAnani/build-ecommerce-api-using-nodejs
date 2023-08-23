@@ -189,6 +189,7 @@ const checkoutCompletedService = expressAsyncHandler(async (req, res) => {
 
   console.log("sig", sig);
   console.log("req.body", req.body);
+  console.log("req.rawBody", req.rawBody);
 
   try {
     event = stripe.webhooks.constructEvent(
