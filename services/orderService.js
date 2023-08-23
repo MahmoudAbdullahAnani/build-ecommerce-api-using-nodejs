@@ -187,6 +187,7 @@ const checkoutCompletedService = async (req, res) => {
   const sig = req.headers["stripe-signature"];
 
   console.log("req.body.data", req.body.data);
+  console.log("req.data", req.data);
 
   let eventCheckOut;
 
