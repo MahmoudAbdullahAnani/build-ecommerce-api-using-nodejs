@@ -182,6 +182,40 @@ const createOrderCard = expressAsyncHandler(async (req, res, next) => {
   res.status(200).json({ message: "Created Checkout Session", session });
 });
 
+const checkoutCompletedService = expressAsyncHandler(async (req, res) => {
+  const sig = req.headers["stripe-signature"];
+
+  let event;
+
+  try {
+    event = stripe.webhooks.constructEvent(
+      req.body,
+      sig,
+      process.env.endpoint_checkout_completed_secret
+    );
+  } catch (err) {
+    res
+      .status(400)
+      .send(`Webhook Error(endpoint checkout-completed): ${err.message}`);
+    return;
+  }
+
+  // Handle the event
+  switch (event.type) {
+    case "checkout.session.completed":
+      const checkoutSessionCompleted = event.data.object;
+      // Then define and call a function to handle the event checkout.session.completed
+      console.log("checkoutSessionCompleted", checkoutSessionCompleted);
+      break;
+    // ... handle other event types
+    default:
+      res.status(400).send(`Unhandled event type ${event.type}`);
+  }
+
+  // Return a 200 response to acknowledge receipt of the event
+  res.send();
+});
+
 module.exports = {
   createOrderCash,
   createOrderCard,
@@ -189,4 +223,33 @@ module.exports = {
   getSingleOrder,
   getUserOrders,
   clearOrders,
+  checkoutCompletedService,
 };
+
+/*
+  (req, res) => {
+    const sig = req.headers["stripe-signature"];
+
+    let event;
+
+    try {
+      event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
+    } catch (err) {
+      res.status(400).send(`Webhook Error: ${err.message}`);
+      return;
+    }
+
+    // Handle the event
+    switch (event.type) {
+      case "checkout.session.completed":
+        const checkoutSessionCompleted = event.data.object;
+        // Then define and call a function to handle the event checkout.session.completed
+        break;
+      // ... handle other event types
+      default:
+        console.log(`Unhandled event type ${event.type}`);
+    }
+
+    // Return a 200 response to acknowledge receipt of the event
+    response.send();
+  }*/

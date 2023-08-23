@@ -34,6 +34,14 @@ app.use(express.static(path.join(__dirname, "uploads")));
 // Mount Router
 mountRouter(app);
 
+// Add End Point in checkout.session.completed
+const { checkoutCompletedService } = require("./services/orderService")
+app.post(
+  "/checkout-completed",
+  express.raw({ type: "application/json" }),
+  checkoutCompletedService
+);
+
 // @desc Handeling any not ruotes for errors
 app.all("*", (req, res, next) => {
   next(new apiError("This is Ruote not Found", 400));
