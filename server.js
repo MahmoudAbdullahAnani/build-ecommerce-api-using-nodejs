@@ -7,7 +7,7 @@ dotenv.config({ path: "./config.env" });
 const PORT = process.env.PORT || 8000;
 const NODE_ENV = process.env.NODE_ENV;
 const connectionDB = require("./config/connectionDB");
-x// Errors
+// Errors
 const apiError = require("./utils/apiError");
 const globlError = require("./middleware/globlError");
 // Routers
