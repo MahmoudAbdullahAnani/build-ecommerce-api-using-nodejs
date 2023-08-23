@@ -183,27 +183,30 @@ const createOrderCard = expressAsyncHandler(async (req, res, next) => {
 });
 
 const checkoutCompletedService = expressAsyncHandler(async (req, res) => {
-  // console.log("req.body.data", req.body.data.object);//data
-  let isPay = false;
-  isPay = req.body.data?.object || false;
+  const sig = request.headers["stripe-signature"];
 
-  if (isPay) {
-    // Then define and call a function to handle the event checkout.session.completed
-    // decremant For The Qauntity And Dicremant For The Sold And Clear User Cart
-    const OrderData = await getAndCalcOrder(req, res);
+  let event;
 
-    const bulkAction = OrderData.cart.cartItems.map((pro) => ({
-      updateOne: {
-        filter: { _id: pro.productId },
-        update: { $inc: { quantity: -pro.quantity, sold: +pro.quantity } },
-      },
-    }));
-    await productsModel.bulkWrite(bulkAction, {});
-    await cartModule.deleteMany({ user: cart.user });
-    return res.status(201).json({ status: "saccess", message: "payid" });
-  } else {
-    return res.status(400).send(`Unhandled event type ${eventCheckOut.type}`);
+  try {
+    event = stripe.webhooks.constructEvent(
+      request.body,
+      sig,
+      process.env.endpoint_checkout_completed_secret
+    );
+  } catch (err) {
+    response.status(400).send(`Webhook Error: ${err.message}`);
+    return;
   }
+
+  // Handle the event
+  if (event.type === "checkout.session.completed") {
+    const checkoutSessionCompleted = event.data.object;
+    // Then define and call a function to handle the event checkout.session.completed
+    //     2- If Saccess Pay On This Session ==Then=> decremant For The Qauntity And Dicremant For The Sold And Clear User Cart
+    return res.status(201).json({ status: "saccess", message: "Card Payid" });
+  }
+  // is any Error
+  return res.status(404).json({ status: "Error", message: "Bad Card Payid" });
 });
 
 module.exports = {
@@ -217,29 +220,16 @@ module.exports = {
 };
 
 /*
-  (req, res) => {
-    const sig = req.headers["stripe-signature"];
+    // Then define and call a function to handle the event checkout.session.completed
+    // decremant For The Qauntity And Dicremant For The Sold And Clear User Cart
+    const OrderData = await getAndCalcOrder(req, res);
 
-    let event;
-
-    try {
-      event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
-    } catch (err) {
-      res.status(400).send(`Webhook Error: ${err.message}`);
-      return;
-    }
-
-    // Handle the event
-    switch (event.type) {
-      case "checkout.session.completed":
-        const checkoutSessionCompleted = event.data.object;
-        // Then define and call a function to handle the event checkout.session.completed
-        break;
-      // ... handle other event types
-      default:
-        console.log(`Unhandled event type ${event.type}`);
-    }
-
-    // Return a 200 response to acknowledge receipt of the event
-    response.send();
-  }*/
+    const bulkAction = OrderData.cart.cartItems.map((pro) => ({
+      updateOne: {
+        filter: { _id: pro.productId },
+        update: { $inc: { quantity: -pro.quantity, sold: +pro.quantity } },
+      },
+    }));
+    await productsModel.bulkWrite(bulkAction, {});
+    await cartModule.deleteMany({ user: cart.user });
+    return res.status(201).json({ status: "saccess", message: "payid" });  }*/
