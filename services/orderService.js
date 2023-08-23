@@ -185,12 +185,14 @@ const createOrderCard = expressAsyncHandler(async (req, res, next) => {
 const checkoutCompletedService = expressAsyncHandler(async (req, res) => {
   const sig = req.headers["stripe-signature"];
 
+  const result  = stripe.webhooks.constructEvent(
+      req.body,
+      sig,
+      process.env.endpoint_checkout_completed_secret
+    );
+console.log('result',result);
+
   let event;
-
-  console.log("sig", sig);
-  console.log("req.body", req.body);
-  console.log("req.rawBody", req.rawBody);
-
   try {
     event = stripe.webhooks.constructEvent(
       req.body,
