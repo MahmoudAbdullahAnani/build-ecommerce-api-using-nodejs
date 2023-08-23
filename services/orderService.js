@@ -184,8 +184,6 @@ const createOrderCard = expressAsyncHandler(async (req, res, next) => {
 
 const checkoutCompletedService = expressAsyncHandler(async (req, res) => {
   const sig = req.headers["stripe-signature"];
-
-
   let event;
   try {
     event = stripe.webhooks.constructEvent(
@@ -218,17 +216,3 @@ module.exports = {
   checkoutCompletedService,
 };
 
-/*
-    // Then define and call a function to handle the event checkout.session.completed
-    // decremant For The Qauntity And Dicremant For The Sold And Clear User Cart
-    const OrderData = await getAndCalcOrder(req, res);
-
-    const bulkAction = OrderData.cart.cartItems.map((pro) => ({
-      updateOne: {
-        filter: { _id: pro.productId },
-        update: { $inc: { quantity: -pro.quantity, sold: +pro.quantity } },
-      },
-    }));
-    await productsModel.bulkWrite(bulkAction, {});
-    await cartModule.deleteMany({ user: cart.user });
-    return res.status(201).json({ status: "saccess", message: "payid" });  }*/
