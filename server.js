@@ -1,4 +1,5 @@
 const path = require("path");
+const hpp = require("hpp");
 
 const express = require("express");
 const app = express();
@@ -13,8 +14,31 @@ const globlError = require("./middleware/globlError");
 // Routers
 const mountRouter = require("./routers/index");
 
-app.use(express.json());
+// Body Parseing
+app.use(express.json({ limit: "1000kb" }));
 
+// Hacker Send Query In Inputs "Input-Query"
+// To remove data using these defaults:
+const mongoSanitize = require("express-mongo-sanitize")
+app.use(mongoSanitize());
+
+// HTTP parametr pollution
+app.use(hpp())
+
+// Hakers Attac
+const rateLimit = require("express-rate-limit");
+
+const limiter = rateLimit({
+  windowMs: 10 * 60 * 1000, // 5 minutes
+  max: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
+  standardHeaders: false, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+});
+
+// Apply the rate limiting middleware to all requests
+app.use(limiter);
+
+// Connection DataBase
 connectionDB();
 
 // Deploymant Access & compression data
@@ -35,9 +59,9 @@ app.use(express.static(path.join(__dirname, "uploads")));
 mountRouter(app);
 
 // Add End Point in checkout.session.completed
-const { checkoutCompletedService } = require("./services/orderService")
+const { checkoutCompletedService } = require("./services/orderService");
 app.post(
-    `/checkout-completed`,
+  `/checkout-completed`,
   express.raw({ type: "application/json" }),
   checkoutCompletedService
 );
