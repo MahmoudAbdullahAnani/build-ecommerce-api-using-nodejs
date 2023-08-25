@@ -58,9 +58,8 @@ router
     createReviewByProductId
 );
   // Handling Error Upload file
-const app = express();
 const AWS = require("aws-sdk");
-const s3 = new AWS.S3();
+const s3 = new AWS.S3()
 
 router
   .route("/")
@@ -74,28 +73,24 @@ router
     ]),
     reProcessImages,
     async (req, res) => {
-      let filename = req.path.slice(1);
+      // store something
+      await s3
+        .putObject({
+          Body: JSON.stringify({ key: "value" }),
+          Bucket: "cyclic-fuzzy-lion-singlet-eu-west-3",
+          Key: "some_files/my_file.json",
+        })
+        .promise();
 
-      console.log(filename)
-      // try {
-      //   let s3File = await s3
-      //     .getObject({
-      //       Bucket: process.env.BUCKET,
-      //       Key: filename,
-      //     })
-      //     .promise();
+      // get it back
+      let my_file = await s3
+        .getObject({
+          Bucket: "cyclic-fuzzy-lion-singlet-eu-west-3",
+          Key: "some_files/my_file.json",
+        })
+        .promise();
 
-      //   res.set("Content-type", s3File.ContentType);
-      //   res.send(s3File.Body.toString()).end();
-      // } catch (error) {
-      //   if (error.code === "NoSuchKey") {
-      //     console.log(`No such key ${filename}`);
-      //     res.sendStatus(404).end();
-      //   } else {
-      //     console.log(error);
-      //     res.sendStatus(500).end();
-      //   }
-      // }
+      console.log('my_file',JSON.parse(my_file));
     },
     createValdetorProduct,
     meddilewareCategorieError,
