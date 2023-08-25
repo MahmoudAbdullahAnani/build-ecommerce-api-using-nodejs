@@ -11,7 +11,7 @@ const processUserImage = expressAsyncHandler(async (req, res, next) => {
     .resize(400, 400)
     .toFormat("jpg")
     .jpeg({ quality: 90 })
-    .toFile(`uploads/user/images/${userImageFileName}`);
+    .toFile(`tmp/user/images/${userImageFileName}`);
   req.body.userImg = userImageFileName;
   next();
 });

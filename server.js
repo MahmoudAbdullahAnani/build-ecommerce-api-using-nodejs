@@ -52,7 +52,7 @@ if (NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
 // access static files
-app.use(express.static(path.join(__dirname, "uploads")));
+app.use(express.static(path.join(__dirname, "tmp")));
 
 // Add End Point in checkout.session.completed
 const { checkoutCompletedService } = require("./services/orderService");

@@ -92,7 +92,7 @@ const reProcessImages = asyncHandler(async (req, res, next) => {
       .resize(500, 600)
       .toFormat("jpg")
       .jpeg({ quality: 90 })
-      .toFile(`uploads/product/images/${imageCaverFileName}`);
+      .toFile(`tmp/product/images/${imageCaverFileName}`);
     req.body.imageCover = imageCaverFileName;
   }
   if (req.files.images) {
@@ -104,7 +104,7 @@ const reProcessImages = asyncHandler(async (req, res, next) => {
           .resize(500, 600)
           .toFormat("jpg")
           .jpeg({ quality: 90 })
-          .toFile(`uploads/product/images/${imageFileName}`);
+          .toFile(`tmp/product/images/${imageFileName}`);
         return images.push(imageFileName);
       })
     );

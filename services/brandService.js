@@ -13,7 +13,7 @@ const imageBrandResize = expressAsyncHandler(async (req, res, next) => {
     .resize(500, 600)
     .toFormat("jpg")
     .jpeg({ quality: 10 })
-    .toFile("uploads/brand" + fileName);
+    .toFile("tmp/brand" + fileName);
   next();
 });
 

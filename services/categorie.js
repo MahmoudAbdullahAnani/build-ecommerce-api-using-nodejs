@@ -24,7 +24,7 @@ const imageUpload = asyncHandler(async (req, res, next) => {
       .resize(400, 600)
       .toFormat("jpg")
       .jpeg({ quality: 90 })
-      .toFile(`uploads/category/images/${fileName}`);
+      .toFile(`tmp/category/images/${fileName}`);
     req.body.image = fileName;
   }
   next();
