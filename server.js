@@ -56,19 +56,20 @@ app.use(express.static(path.join(__dirname, "uploads")));
 
 // Add End Point in checkout.session.completed
 const { checkoutCompletedService } = require("./services/orderService");
+
+
+
+// EndPoint Checkout session completed
 app.post(
   `/checkout-completed`,
   express.raw({ type: "application/json" }),
   checkoutCompletedService
 );
 
-  
-
-// Body Parseing
+// Body Parser
 app.use(express.json({ limit: "1000kb" }));
 
-
-// Mount Router
+// Mount Routers
 mountRouter(app);
 
 
