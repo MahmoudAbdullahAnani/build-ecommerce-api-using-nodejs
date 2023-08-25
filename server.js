@@ -14,8 +14,7 @@ const globlError = require("./middleware/globlError");
 // Routers
 const mountRouter = require("./routers/index");
 
-// Body Parseing
-app.use(express.json({ limit: "1000kb" }));
+
 
 // Hacker Send Query In Inputs "Input-Query"
 // To remove data using these defaults:
@@ -55,9 +54,6 @@ if (NODE_ENV === "development") {
 // access static files
 app.use(express.static(path.join(__dirname, "uploads")));
 
-// Mount Router
-mountRouter(app);
-
 // Add End Point in checkout.session.completed
 const { checkoutCompletedService } = require("./services/orderService");
 app.post(
@@ -65,6 +61,16 @@ app.post(
   express.raw({ type: "application/json" }),
   checkoutCompletedService
 );
+
+  
+
+// Body Parseing
+app.use(express.json({ limit: "1000kb" }));
+
+
+// Mount Router
+mountRouter(app);
+
 
 // @desc Handeling any not ruotes for errors
 app.all("*", (req, res, next) => {
