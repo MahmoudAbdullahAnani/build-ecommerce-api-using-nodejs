@@ -207,10 +207,13 @@ const checkoutCompletedService = expressAsyncHandler(async (req, res) => {
 */
   // Handle the event
   if (event.type === "checkout.session.completed") {
-    console.log('heeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeer')
+    console.log('heeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeer-1')
     const OrderData = await getAndCalcOrder(req, res);
+    console.log('heeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeer-2')
     const cart = OrderData.cart;
+    console.log('heeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeer-3')
     const checkoutSessionCompleted = event.data.object;
+    console.log('heeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeer-4')
     // Then define and call a function to handle the event checkout.session.completed
     // 1) create new order (typeMethodPay = 'card')
     console.log("line One cart", cart);
