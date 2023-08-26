@@ -175,7 +175,8 @@ const createOrderCard = expressAsyncHandler(async (req, res, next) => {
     mode: "payment",
     success_url: `${req.protocol}://${req.get("host")}/home?success=true`,
     cancel_url: `${req.protocol}://${req.get("host")}/cart?canceled=true`,
-    client_reference_id: OrderData.cart._id.toString(),
+
+    client_reference_id: req.user._id.toString(),
     customer_email: req.user.email,
     metadata: req.body.shippingAddress,
   });
@@ -194,12 +195,26 @@ const checkoutCompletedService = expressAsyncHandler(async (req, res) => {
   } catch (err) {
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
-
+/*
+  const OrderData = {
+    totalOrderPrice,
+    texPrice,
+    shippingPrice,
+    cart,
+  };
+*/
   // Handle the event
   if (event.type === "checkout.session.completed") {
     const checkoutSessionCompleted = event.data.object;
     // Then define and call a function to handle the event checkout.session.completed
-    //     2- If Saccess Pay On This Session ==Then=> decremant For The Qauntity And Dicremant For The Sold And Clear User Cart
+    // 1) create new order (typeMethodPay = 'card')
+
+    // const order = await orderModule.create({
+    //   user:checkoutSessionCompleted.
+    // })
+    // 2) decremant For The Qauntity And Dicremant For The Sold And Clear User Cart
+    // 3) clear cart
+
     console.log("checkoutSessionCompleted", checkoutSessionCompleted);
     return res.status(201).json({ status: "saccess", message: "Card Payid" });
   }
@@ -216,3 +231,81 @@ module.exports = {
   clearOrders,
   checkoutCompletedService,
 };
+
+/*
+
+ {
+  id: 'cs_test_a1funp5Z6SU2XqgBut0rkQRlgXFFWzGn0Ksms2SohrRsnxCTIPy2hiV11I',
+  object: 'checkout.session',
+  after_expiration: null,
+  allow_promotion_codes: null,
+  amount_subtotal: 12560,
+  amount_total: 12560,
+  automatic_tax: { enabled: false, status: null },
+  billing_address_collection: null,
+  cancel_url: 'http://octopus-shop.cyclic.cloud/cart?canceled=true',
+  client_reference_id: '64e81964e0572b0a5185367c',
+  consent: null,
+  consent_collection: null,
+  created: 1693038498,
+  currency: 'egp',
+  currency_conversion: null,
+  custom_fields: [],
+  custom_text: { shipping_address: null, submit: null },
+  customer: null,
+  customer_creation: 'if_required',
+  customer_details: {
+    address: {
+      city: null,
+      country: 'EG',
+      line1: null,
+      line2: null,
+      postal_code: null,
+      state: null
+    },
+    email: 'ahmed1@gmail.com',
+    name: 'Ahmed Abdullah',
+    phone: null,
+    tax_exempt: 'none',
+    tax_ids: []
+  },
+  customer_email: 'ahmed1@gmail.com',
+  expires_at: 1693124897,
+  invoice: null,
+  invoice_creation: {
+    enabled: false,
+    invoice_data: {
+      account_tax_ids: null,
+      custom_fields: null,
+      description: null,
+      footer: null,
+      metadata: {},
+      rendering_options: null
+    }
+  },
+  livemode: false,
+  locale: null,
+  metadata: { details: 'الرحمانية/ ميت غمر /دقهلية', alias: 'الرحمانية' },
+  mode: 'payment',
+  payment_intent: 'pi_3NjHs1DLxPO17Qwj1qhjoifS',
+  payment_link: null,
+  payment_method_collection: 'if_required',
+  payment_method_options: {},
+  payment_method_types: [ 'card' ],
+  payment_status: 'paid',
+  phone_number_collection: { enabled: false },
+  recovered_from: null,
+  setup_intent: null,
+  shipping_address_collection: null,
+  shipping_cost: null,
+  shipping_details: null,
+  shipping_options: [],
+  status: 'complete',
+  submit_type: null,
+  subscription: null,
+  success_url: 'http://octopus-shop.cyclic.cloud/home?success=true',
+  total_details: { amount_discount: 0, amount_shipping: 0, amount_tax: 0 },
+  url: null
+}
+
+*/
