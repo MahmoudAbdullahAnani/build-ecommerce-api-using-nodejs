@@ -12,14 +12,15 @@ const stripe = require("stripe")(process.env.stripe_secret_key);
     2- Get Cart,
     3- Calc Total Price After Discount
   */
-const getAndCalcOrder = async (req, res) => {
+const getAndCalcOrder = async (req, res, user = false) => {
+  const filter = user ? user : req.user._id;
   // 0) Get Texes
   const texes = await texesModule.findOne({});
   const texPrice = texes.texPrice;
   const shippingPrice = texes.shippingPrice;
   // 1) Get cart by user id
   const cart = await cartModule
-    .findOne({ user: req.user._id })
+    .findOne({ user: filter })
     .populate({ path: "cartItems.productId", select: "imageCover" });
   if (!cart || cart.cartItems.length === 0) {
     return res.status(404).json({
@@ -199,12 +200,14 @@ const checkoutCompletedService = expressAsyncHandler(async (req, res) => {
 
   if (event.type === "checkout.session.completed") {
     const checkoutSessionCompleted = event.data.object;
-  const OrderData = await getAndCalcOrder(req, res);
-  const cart = OrderData.cart;
+    const OrderData = await getAndCalcOrder(
+      req,
+      res,
+      checkoutSessionCompleted.client_reference_id
+    );
+    const cart = OrderData.cart;
     // Then define and call a function to handle the event checkout.session.completed
     // 1) create new order (typeMethodPay = 'card')
-    console.log("line One cart", cart);
-    console.log("line One OrderData.cart", OrderData.cart);
     const order = await orderModule.create({
       user: checkoutSessionCompleted.client_reference_id,
       cartItems: OrderData.cart.cartItems,
@@ -217,18 +220,15 @@ const checkoutCompletedService = expressAsyncHandler(async (req, res) => {
       shippingAddress: checkoutSessionCompleted.metadata,
     });
     // 2) decremant For The Qauntity And Dicremant For The Sold And Clear User Cart
-    console.log("line Two cart", cart);
-    console.log("line Two OrderData.cart", OrderData.cart);
-
-    // const bulkAction = cart.cartItems.map((product) => ({
-    //   updateOne: {
-    //     filter: { _id: product.productId },
-    //     update: {
-    //       $inc: { quantity: -product.quantity, sold: +product.quantity },
-    //     },
-    //   },
-    // }));
-    // await productsModel.bulkWrite(bulkAction, {});
+    const bulkAction = cart.cartItems.map((product) => ({
+      updateOne: {
+        filter: { _id: product.productId },
+        update: {
+          $inc: { quantity: -product.quantity, sold: +product.quantity },
+        },
+      },
+    }));
+    await productsModel.bulkWrite(bulkAction, {});
     // 3) clear cart
     await cartModule.deleteMany({
       user: checkoutSessionCompleted.client_reference_id,
