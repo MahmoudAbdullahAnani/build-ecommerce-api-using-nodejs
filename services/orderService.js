@@ -195,7 +195,7 @@ const checkoutCompletedService = expressAsyncHandler(async (req, res) => {
   } catch (err) {
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
-/*
+  /*
   const OrderData = {
     totalOrderPrice,
     texPrice,
@@ -205,18 +205,39 @@ const checkoutCompletedService = expressAsyncHandler(async (req, res) => {
 */
   // Handle the event
   if (event.type === "checkout.session.completed") {
+    const OrderData = await getAndCalcOrder(req, res);
     const checkoutSessionCompleted = event.data.object;
     // Then define and call a function to handle the event checkout.session.completed
     // 1) create new order (typeMethodPay = 'card')
-
-    // const order = await orderModule.create({
-    //   user:checkoutSessionCompleted.
-    // })
+    const order = await orderModule.create({
+      user: checkoutSessionCompleted.client_reference_id.toString(),
+      cartItems: OrderData.cart.cartItems,
+      texPrice: OrderData.texPrice,
+      shippingPrice: OrderData.shippingPrice,
+      totalOrderPrice: OrderData.totalOrderPrice,
+      paymentMethodType: "card",
+      isPaid: true,
+      paidAt: Date.now(),
+      shippingAddress: checkoutSessionCompleted.metadata,
+    });
     // 2) decremant For The Qauntity And Dicremant For The Sold And Clear User Cart
+    const bulkAction = OrderData.cart.cartItems.map((pro) => ({
+      update: {
+        filter: { _id: pro.productId },
+        update: { $icn: { quantity: -pro.quantity, sold: +pro.quantity } },
+      },
+    }));
+    await productsModel.bulkWrite(bulkAction, {});
     // 3) clear cart
-
-    console.log("checkoutSessionCompleted", checkoutSessionCompleted);
-    return res.status(201).json({ status: "saccess", message: "Card Payid" });
+    await cartModule.deleteMany({
+      user: checkoutSessionCompleted.client_reference_id,
+    });
+    return res.status(201).json({
+      status: "saccess",
+      message: "Card Payid",
+      count_products: order.cartItems.length,
+      data: order,
+    });
   }
   // is any Error
   return res.status(404).json({ status: "Error", message: "Bad Card Payid" });
