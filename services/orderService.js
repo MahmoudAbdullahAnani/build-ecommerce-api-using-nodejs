@@ -196,13 +196,11 @@ const checkoutCompletedService = expressAsyncHandler(async (req, res) => {
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
   // Handle the event
-  const OrderData = await getAndCalcOrder(req, res);
-  const cart = OrderData.cart;
+
   if (event.type === "checkout.session.completed") {
     const checkoutSessionCompleted = event.data.object;
-    console.log('heeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeer-1')
-    console.log('heeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeer-2')
-    console.log('heeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeer-3')
+  const OrderData = await getAndCalcOrder(req, res);
+  const cart = OrderData.cart;
     // Then define and call a function to handle the event checkout.session.completed
     // 1) create new order (typeMethodPay = 'card')
     console.log("line One cart", cart);
@@ -222,15 +220,15 @@ const checkoutCompletedService = expressAsyncHandler(async (req, res) => {
     console.log("line Two cart", cart);
     console.log("line Two OrderData.cart", OrderData.cart);
 
-    const bulkAction = cart.cartItems.map((product) => ({
-      updateOne: {
-        filter: { _id: product.productId },
-        update: {
-          $inc: { quantity: -product.quantity, sold: +product.quantity },
-        },
-      },
-    }));
-    await productsModel.bulkWrite(bulkAction, {});
+    // const bulkAction = cart.cartItems.map((product) => ({
+    //   updateOne: {
+    //     filter: { _id: product.productId },
+    //     update: {
+    //       $inc: { quantity: -product.quantity, sold: +product.quantity },
+    //     },
+    //   },
+    // }));
+    // await productsModel.bulkWrite(bulkAction, {});
     // 3) clear cart
     await cartModule.deleteMany({
       user: checkoutSessionCompleted.client_reference_id,
