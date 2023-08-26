@@ -196,12 +196,12 @@ const checkoutCompletedService = expressAsyncHandler(async (req, res) => {
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
   // Handle the event
+  const OrderData = await getAndCalcOrder(req, res);
+  const cart = OrderData.cart;
   if (event.type === "checkout.session.completed") {
     const checkoutSessionCompleted = event.data.object;
     console.log('heeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeer-1')
-    const OrderData = await getAndCalcOrder(req, res);
     console.log('heeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeer-2')
-    const cart = OrderData.cart;
     console.log('heeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeer-3')
     // Then define and call a function to handle the event checkout.session.completed
     // 1) create new order (typeMethodPay = 'card')
