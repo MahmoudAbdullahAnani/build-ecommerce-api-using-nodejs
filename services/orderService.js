@@ -200,6 +200,7 @@ const checkoutCompletedService = expressAsyncHandler(async (req, res) => {
     const checkoutSessionCompleted = event.data.object;
     // Then define and call a function to handle the event checkout.session.completed
     //     2- If Saccess Pay On This Session ==Then=> decremant For The Qauntity And Dicremant For The Sold And Clear User Cart
+    console.log("checkoutSessionCompleted", checkoutSessionCompleted);
     return res.status(201).json({ status: "saccess", message: "Card Payid" });
   }
   // is any Error
@@ -215,4 +216,3 @@ module.exports = {
   clearOrders,
   checkoutCompletedService,
 };
-

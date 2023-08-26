@@ -56,10 +56,7 @@ router
     createReviewByproductIdValdetor,
     meddilewareCategorieError,
     createReviewByProductId
-);
-  // Handling Error Upload file
-const AWS = require("aws-sdk");
-const s3 = new AWS.S3()
+  );
 
 router
   .route("/")
@@ -72,26 +69,6 @@ router
       { name: "images", maxCount: 10 },
     ]),
     reProcessImages,
-    async (req, res) => {
-      // store something
-      await s3
-        .putObject({
-          Body: JSON.stringify({ key: "value" }),
-          Bucket: "cyclic-fuzzy-lion-singlet-eu-west-3",
-          Key: "some_files/my_file.json",
-        })
-        .promise();
-
-      // get it back
-      let my_file = await s3
-        .getObject({
-          Bucket: "cyclic-fuzzy-lion-singlet-eu-west-3",
-          Key: "some_files/my_file.json",
-        })
-        .promise();
-
-      console.log('my_file',JSON.parse(my_file));
-    },
     createValdetorProduct,
     meddilewareCategorieError,
     postProducts
