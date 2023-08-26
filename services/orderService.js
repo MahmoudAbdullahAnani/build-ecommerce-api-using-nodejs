@@ -120,7 +120,7 @@ const getUserOrders = expressAsyncHandler(async (req, res, next) => {
       select: "title description quantity sold",
     });
   if (order.length === 0) {
-    throw next(new apiError("You haven't made any request before "));
+    throw next(new apiError("You haven't made any request before",405));
   }
   res.status(200).json({
     message: "Get All My Orders",
