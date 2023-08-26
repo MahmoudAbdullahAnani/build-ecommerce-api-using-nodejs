@@ -212,8 +212,10 @@ const checkoutCompletedService = expressAsyncHandler(async (req, res) => {
     const checkoutSessionCompleted = event.data.object;
     // Then define and call a function to handle the event checkout.session.completed
     // 1) create new order (typeMethodPay = 'card')
+        console.log("line One cart", cart);
+        console.log("line One OrderData.cart", OrderData.cart);
     const order = await orderModule.create({
-      user: checkoutSessionCompleted.client_reference_id.toString(),
+      user: checkoutSessionCompleted.client_reference_id,
       cartItems: OrderData.cart.cartItems,
       texPrice: OrderData.texPrice,
       shippingPrice: OrderData.shippingPrice,
@@ -225,8 +227,7 @@ const checkoutCompletedService = expressAsyncHandler(async (req, res) => {
     });
     // 2) decremant For The Qauntity And Dicremant For The Sold And Clear User Cart
 
-    console.log("cart", cart);
-    console.log("OrderData.cart", OrderData.cart);
+
     const bulkAction = cart.cartItems.map((product) => ({
       updateOne: {
         filter: { _id: product.productId },
