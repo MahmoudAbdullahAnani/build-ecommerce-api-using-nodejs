@@ -120,7 +120,7 @@ const getUserOrders = expressAsyncHandler(async (req, res, next) => {
       select: "title description quantity sold",
     });
   if (order.length === 0) {
-    throw next(new apiError("You haven't made any request before",405));
+    throw next(new apiError("You haven't made any request before", 404));
   }
   res.status(200).json({
     message: "Get All My Orders",
@@ -196,16 +196,19 @@ const checkoutCompletedService = expressAsyncHandler(async (req, res) => {
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
   /*
-  const OrderData = {
-    totalOrderPrice,
-    texPrice,
-    shippingPrice,
-    cart,
-  };
+  const bulkOption = cart.cartItems.map((product) => ({
+    updateOne: {
+      filter: { _id: product.productId },
+      update: {
+        $inc: { quantity: -product.quantity, sold: +product.quantity },
+      },
+    },
+  }));
 */
   // Handle the event
   if (event.type === "checkout.session.completed") {
     const OrderData = await getAndCalcOrder(req, res);
+    const cart = OrderData.cart;
     const checkoutSessionCompleted = event.data.object;
     // Then define and call a function to handle the event checkout.session.completed
     // 1) create new order (typeMethodPay = 'card')
@@ -221,10 +224,15 @@ const checkoutCompletedService = expressAsyncHandler(async (req, res) => {
       shippingAddress: checkoutSessionCompleted.metadata,
     });
     // 2) decremant For The Qauntity And Dicremant For The Sold And Clear User Cart
-    const bulkAction = OrderData.cart.cartItems.map((pro) => ({
+
+    console.log("cart", cart);
+    console.log("OrderData.cart", OrderData.cart);
+    const bulkAction = cart.cartItems.map((product) => ({
       updateOne: {
-        filter: { _id: pro.productId },
-        update: { $icn: { quantity: -pro.quantity, sold: +pro.quantity } },
+        filter: { _id: product.productId },
+        update: {
+          $inc: { quantity: -product.quantity, sold: +product.quantity },
+        },
       },
     }));
     await productsModel.bulkWrite(bulkAction, {});
