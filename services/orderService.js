@@ -222,7 +222,7 @@ const checkoutCompletedService = expressAsyncHandler(async (req, res) => {
     });
     // 2) decremant For The Qauntity And Dicremant For The Sold And Clear User Cart
     const bulkAction = OrderData.cart.cartItems.map((pro) => ({
-      update: {
+      updateOne: {
         filter: { _id: pro.productId },
         update: { $icn: { quantity: -pro.quantity, sold: +pro.quantity } },
       },
