@@ -17,7 +17,7 @@ const signupValidator = [
     .notEmpty()
     .withMessage("the email is required")
     .isEmail()
-    .withMessage("not invalid email")
+    .withMessage("invalid email")
     .custom(async (email) => {
       const user = await UserModel.find({ email });
       if (user.length > 0) {
@@ -43,7 +43,7 @@ const signinValidator = [
     .notEmpty()
     .withMessage("the email is required")
     .isEmail()
-    .withMessage("not invalid email"),
+    .withMessage("invalid email"),
   check("password")
     .notEmpty()
     .withMessage("the password is required")
@@ -96,12 +96,12 @@ const updataMyDateValidator = [
     .notEmpty()
     .withMessage("email is required")
     .isEmail()
-    .withMessage("not invalid email"),
+    .withMessage("invalid email"),
   check("phone")
     .notEmpty()
     .withMessage("phone number is required")
     .isMobilePhone(["ar-EG", "ar-SA"])
-    .withMessage("not invalid phone number"),
+    .withMessage("invalid phone number"),
 ];
 module.exports = {
   signupValidator,
