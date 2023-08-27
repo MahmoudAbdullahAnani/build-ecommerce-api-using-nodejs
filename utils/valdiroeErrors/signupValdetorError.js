@@ -67,7 +67,7 @@ const verifyCodeValidator = [
     .withMessage("the code length is 5 char!"),
 ];
 const resetPasswordValidator = [
-  // validator newPassword
+  // validator new Password
   check("password")
     .notEmpty()
     .withMessage("the new password is required")
