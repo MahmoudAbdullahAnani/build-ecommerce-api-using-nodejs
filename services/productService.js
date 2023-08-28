@@ -39,19 +39,23 @@ const getProducts = asyncHandler(async (req, res) => {
   let fields = req.query?.fields || "";
   const handelMoreFieldsFields = fields.split(",").join(" ");
 
+  const search = req.query.keyword || false;
+  let findData = { ...requstQueryString };
+  // // 5) search
+  if (search) {
+    findData = {
+      ...requstQueryString,
+      $or: [{ title: search }, { description: search }, { brand :search}],
+    };
+  }
+
   const mongooBuild = productsModel
-    .find(requstQueryString)
+    .find(findData)
     .skip(skip)
     .limit(limit)
     .sort(handelMoreFieldsSort)
     .select(handelMoreFieldsFields + "-__v")
     .populate({ path: "reviews", select: "reviewText rating" });
-
-  //   const search = req.query.keyword || false
-  // // 5) search
-  // if (search) {
-  //   mongooBuild.find()
-  // }
 
   const data = await mongooBuild;
   // data.map((product) => {
