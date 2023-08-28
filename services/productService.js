@@ -67,7 +67,7 @@ const getProducts = asyncHandler(async (req, res) => {
     length: data.length,
     data: data,
   };
-  res.json(dataOpj, requstQueryString);
+  res.json(dataOpj);
 });
 
 // @desc      Get product by id
