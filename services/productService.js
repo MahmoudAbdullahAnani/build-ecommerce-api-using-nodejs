@@ -47,6 +47,12 @@ const getProducts = asyncHandler(async (req, res) => {
     .select(handelMoreFieldsFields + "-__v")
     .populate({ path: "reviews", select: "reviewText rating" });
 
+  //   const search = req.query.keyword || false
+  // // 5) search
+  // if (search) {
+  //   mongooBuild.find()
+  // }
+
   const data = await mongooBuild;
   // data.map((product) => {
   //   const imageCoverName = product.imageCover;
@@ -61,7 +67,7 @@ const getProducts = asyncHandler(async (req, res) => {
     length: data.length,
     data: data,
   };
-  res.json(dataOpj);
+  res.json(dataOpj, requstQueryString);
 });
 
 // @desc      Get product by id
