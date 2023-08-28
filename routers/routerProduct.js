@@ -34,8 +34,6 @@ const {
 router
   .route("/:productId/review/:reviewId")
   .get(
-    protect,
-    allowedTo("user", "admin", "manger"),
     getReviewByproductIdAndReviewIdValdetor,
     meddilewareCategorieError,
     getReviewOnproduct
@@ -44,8 +42,6 @@ router
 router
   .route("/:productId/review")
   .get(
-    protect,
-    allowedTo("user", "admin", "manger"),
     getReviewByproductIdValdetor,
     meddilewareCategorieError,
     getReviewsByProductId
@@ -77,8 +73,6 @@ router
 router
   .route("/:id")
   .get(
-    protect,
-    allowedTo("admin", "manger", "user"),
     getValdetorProductById,
     meddilewareCategorieError,
     getPruductById

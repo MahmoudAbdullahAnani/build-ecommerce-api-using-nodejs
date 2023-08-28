@@ -6,6 +6,7 @@ const multer = require("multer");
 const { storage, fileFilter } = require("../utils/uploads/singleImage");
 const sharp = require("sharp");
 const reviewModeule = require("../modules/reviewModeule");
+const categoryModule = require("../modules/categori");
 
 // @desc      Get All Products {limit, Page}
 // @route     GET /api/v1/products
@@ -13,7 +14,7 @@ const reviewModeule = require("../modules/reviewModeule");
 const getProducts = asyncHandler(async (req, res) => {
   // 1) filter by price and ratingsAverage ( ratingsAverage , price )
   const requstQuerys = { ...req.query };
-  const removeQuerys = ["limit", "page", "sort", "fields"];
+  const removeQuerys = ["limit", "page", "sort", "fields", "keyword"];
   removeQuerys.forEach((item) => {
     delete requstQuerys[item];
   });
@@ -39,16 +40,24 @@ const getProducts = asyncHandler(async (req, res) => {
   let fields = req.query?.fields || "";
   const handelMoreFieldsFields = fields.split(",").join(" ");
 
+  // 5) search
   const search = req.query.keyword || false;
   let findData = { ...requstQueryString };
-  // // 5) search
   if (search) {
-    findData = {
-      ...requstQueryString,
-      $or: [{ title: search }, { description: search }, { brand :search}],
-    };
+    findData.$or = [
+      { title: { $regex: search } },
+      { description: { $regex: search } },
+    ];
   }
-
+  // search on category
+  const searchOnCategory = req.query?.category || false;
+  if (searchOnCategory) {
+    const searchOnCategoryName = await categoryModule.findOne({
+      name: searchOnCategory,
+    });
+    // add find on this id category
+    findData.category =  searchOnCategoryName._id.toString();
+  }
   const mongooBuild = productsModel
     .find(findData)
     .skip(skip)
@@ -127,7 +136,6 @@ const reProcessImages = asyncHandler(async (req, res, next) => {
 // @route     POST /api/v1/products
 // @access    Private
 const postProducts = asyncHandler(async (req, res, next) => {
-  // console.log(req.body);
   if (!req.body.slug) {
     req.body.slug = slugify(req.body.title);
   }
