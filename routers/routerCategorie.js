@@ -42,12 +42,10 @@ router
     meddilewareCategorieError,
     postCategorie
   )
-  .get(protect, allowedTo("admin", "manger","user"), getCategorie);
+  .get(getCategorie);
 router
   .route("/:id")
   .get(
-    protect,
-    allowedTo("admin", "manger", "user"),
     getValdetorCategorieById,
     meddilewareCategorieError,
     getCategorieById
