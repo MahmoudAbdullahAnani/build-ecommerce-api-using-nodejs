@@ -52,11 +52,11 @@ const getProducts = asyncHandler(async (req, res) => {
   // search on category
   const searchOnCategory = req.query?.category || false;
   if (searchOnCategory) {
-    const searchOnCategoryName = await categoryModule.findOne({
-      name: searchOnCategory,
-    });
+    // const searchOnCategoryName = await categoryModule.findOne({
+    //   name: searchOnCategory,
+    // });
     // add find on this id category
-    findData.category =  searchOnCategoryName._id.toString();
+    findData.category = searchOnCategory.toString();
   }
   const mongooBuild = productsModel
     .find(findData)
