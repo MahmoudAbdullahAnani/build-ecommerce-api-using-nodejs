@@ -12,6 +12,7 @@ const reouterCoupons = require("./reouterCoupons");
 const routerCart = require("./routerCart");
 const routerOrder = require("./routerOrder");
 const routerTexes = require("./routerTexes");
+const routerReqProduct = require("./routerReqProduct");
 
 function mountRoutes(app) {
   app.use("/api/v1/category", routerCategorie);
@@ -27,5 +28,6 @@ function mountRoutes(app) {
   app.use("/api/v1/cart", routerCart);
   app.use("/api/v1/order", routerOrder);
   app.use("/api/v1/texes", routerTexes);
+  app.use("/api/v1/reqProduct", routerReqProduct);
 }
 module.exports = mountRoutes;
