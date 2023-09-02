@@ -13,6 +13,7 @@ const routerCart = require("./routerCart");
 const routerOrder = require("./routerOrder");
 const routerTexes = require("./routerTexes");
 const routerReqProduct = require("./routerReqProduct");
+const routerSuppliers = require("./routerSuppliers");
 
 function mountRoutes(app) {
   app.use("/api/v1/category", routerCategorie);
@@ -29,5 +30,6 @@ function mountRoutes(app) {
   app.use("/api/v1/order", routerOrder);
   app.use("/api/v1/texes", routerTexes);
   app.use("/api/v1/reqProduct", routerReqProduct);
+  app.use("/api/v1/suppliers", routerSuppliers);
 }
 module.exports = mountRoutes;
