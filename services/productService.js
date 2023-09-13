@@ -88,7 +88,9 @@ const getProducts = asyncHandler(async (req, res) => {
 // @access    Public
 const getPruductById = asyncHandler(async (req, res, next) => {
   const id = req.params.id;
-  const data = await productsModel.findById(id).populate({ path: "Categorie",select:"" });
+  const data = await productsModel
+    .findById(id)
+    .populate({ path: "category", select: "" });
   const reviews = await reviewModeule.find({ product: id });
   const dataOpj = {
     successful: data ? "true" : "false",
