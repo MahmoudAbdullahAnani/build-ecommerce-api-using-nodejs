@@ -47,7 +47,7 @@ const getMyWishlist = expressAsyncHandler(async (req, res, next) => {
     .select("wishlist name")
     .populate({
       path: "wishlist",
-      select: "title description quantity imageCover",
+      select: "title description quantity imageCover price priceAfterDiscount",
     });
   res.status(200).json({ count: userWishlist.length, data: userWishlist });
 });
