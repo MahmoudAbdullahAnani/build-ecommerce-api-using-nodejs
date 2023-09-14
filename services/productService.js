@@ -91,7 +91,7 @@ const getPruductById = asyncHandler(async (req, res, next) => {
   const data = await productsModel
     .findById(id)
     .populate({ path: "category", select: "" });
-  const reviews = await reviewModeule.find({ product: id });
+const reviews = await reviewModeule.find({ product: id }).populate({path:"user",select:"_id name gmail"})
   const dataOpj = {
     successful: data ? "true" : "false",
     isEmpty: [data].length <= 0 ? "true" : "false",
