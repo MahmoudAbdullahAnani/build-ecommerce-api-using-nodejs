@@ -168,6 +168,15 @@ const getCart = expressAsyncHandler(async (req, res, next) => {
 const updateCart = expressAsyncHandler(async (req, res, next) => {
   const { productId } = req.params;
   const { color = false, quantity = false } = req.body;
+  const productUpdated = await productsModel.findById(productId);
+  if (productUpdated.quantity < quantity) {
+    return next(
+      new apiError(
+        `The number of orders is very low, currently ${productUpdated.quantity} of this product are available`,
+        404
+      )
+    );
+  }
   const cart = await cartModule.findOneAndUpdate(
     { user: req.user._id },
     {},
