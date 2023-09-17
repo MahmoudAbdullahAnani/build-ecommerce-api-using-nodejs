@@ -16,6 +16,6 @@ router
     meddilewareCategorieError,
     createOrUpdateTexes
   )
-  .get(protect, allowedTo("admin", "manger"), getTexes);
+  .get(protect, allowedTo("admin", "manger","user"), getTexes);
 
 module.exports = router;
