@@ -174,8 +174,8 @@ const createOrderCard = expressAsyncHandler(async (req, res, next) => {
       },
     ],
     mode: "payment",
-    success_url: `${req.protocol}://${req.get("host")}/home?success=true`,
-    cancel_url: `${req.protocol}://${req.get("host")}/cart?canceled=true`,
+    success_url: `https://octopus-mall.vercel.app/`,
+    cancel_url: `https://octopus-mall.vercel.app/cart`,
 
     client_reference_id: req.user._id.toString(),
     customer_email: req.user.email,
