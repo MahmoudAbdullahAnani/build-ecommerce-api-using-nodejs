@@ -161,7 +161,7 @@ const createOrderCard = expressAsyncHandler(async (req, res, next) => {
         // Provide the exact Price ID (for example, pr_1234) of the product you want to sell
         price_data: {
           currency: "egp",
-          unit_amount: OrderData.totalOrderPrice * 100,
+          unit_amount: Math.round(OrderData.totalOrderPrice * 100),
           product_data: {
             name: "Octopus-Shop",
             description: "Purchases from the octopus",
